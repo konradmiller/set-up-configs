@@ -112,6 +112,22 @@ function fail()  { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${RED}$@${WH
 function debug() { [[ $VERBOSE -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
 
 
+function update_repository()
+{
+	if [[ -d "$DOT" ]]
+	then
+		# update repository
+		out -n "+ Checking repository for updates... "
+		RES=$(cd "$DOT" && git pull 2>&1)
+	else
+		# clone repository
+		out -n "+ Cloning dotfiles repository... "
+		RES=$(cd "$HOME" && git clone $REPOSITORY .dotfiles 2>&1)
+	fi
+	# first get return value of git command, then echo
+	RET=$?
+	[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
+}
 
 #############################################################
 
@@ -224,20 +240,7 @@ function setup_program()
 # and then call the setup_program function above with every directory
 function setup()
 {
-	if [[ -d "$DOT" ]]
-	then
-		# update repository
-		out -n "+ Checking repository for updates... "
-		RES=$(cd "$DOT" && git pull 2>&1)
-	else
-		# clone repository
-		out -n "+ Cloning dotfiles repository... "
-		RES=$(cd "$HOME" && git clone $REPOSITORY .dotfiles 2>&1)
-	fi
-	# first get return value of git command, then echo
-	RET=$?
-	[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
-
+	update_repository
 	# traverse all directories in repository, except .git
 	while IFS= read -r -u3 -d $'\0' PROGRAM; do
 
@@ -259,6 +262,9 @@ function setup()
 
 function add()
 {
+	# check out repository if it has never been pulled at all
+	[[ ! -d $DOT/.git ]] && update_repository
+
 	if [[ -d "$DOT/$NAME" ]]
 	then
 		echo "+ adding config files to program $NAME"
@@ -334,6 +340,8 @@ function add()
 
 function unlink()
 {
+	[[ ! -d $DOT/.git ]] && fail "Git-repository does not exist" && exit 1
+
 	PROGRAM=$NAME
 	debug "Unlinking program $PROGRAM"
 
