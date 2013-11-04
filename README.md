@@ -11,8 +11,8 @@ Initial setup:
  - Create a git repository somewhere (e.g., on github)
  - Fork and edit the set-up-configs.sh file:
    - Set variable $REPOSITORY, to reflect the location of your git repository
-     (path relative to $HOME)
    - Set variable $DOT, the local clone of your git repository
+     (path relative to $HOME)
 
  - Add vim to git-repository and create symlinks in place of the original files:
      $ set-up-configs.sh -a vim .vimrc .vim/colors/summerfruit256.vim
