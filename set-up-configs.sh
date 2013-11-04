@@ -103,7 +103,7 @@ RED='\033[01;31m'
 WHITE='\033[00m'
 YELLOW='\033[0;33m'
 
-# echo white, green or red (unless -q was given, or if -f is given with -q)
+# echo white, green or red (unless -q was given, or if -v is given with -q)
 function out()   { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo "$@"; }
 function ok()    { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${GREEN}$@${WHITE}"; }
 function fail()  { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${RED}$@${WHITE}" >&2; }
