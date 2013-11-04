@@ -359,7 +359,7 @@ function unlink()
 		[[ $TARGET != "$(readlink $SOURCE)" ]] && fail "$SOURCE does not link to $TARGET" && continue
 
 		# everything is ok, config file is a proper symlink to repo
-		out -n "Replacing symlink with original in repo"
+		out -n "Replacing symlink $SOURCE with original in repo"
 		RES=$(cp --remove-destination "$TARGET" "$SOURCE" 2>&1)
 		RET=$?
 		[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
