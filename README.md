@@ -5,12 +5,12 @@ Bash-Script to manage "dotfiles" with git and symlinks. Has add/unlink/merge sup
 
 Usage: set-up-configs.sh [OPTION...] [NAME] [FILES]
 
-  -a <name> <file1> <file2> ...    add config files to a program
-  -f                               force overwriting conflicting files
-  -h                               print this help list
-  -q                               quiet: only output errors, don't overwrite files
-  -u <name>                        unlink all config files of a program
-  -v                               increase verbosity of output
+  -a <name> <file1> <file2>     add config files to a program
+  -f                            force overwriting conflicting files
+  -h                            print this help list
+  -q                            quiet: only output errors, don't overwrite files
+  -u <name>                     unlink all config files of a program
+  -v                            increase verbosity of output
 
 Initial setup:
  - Create a git repository somewhere (e.g., on github)
