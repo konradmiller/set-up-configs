@@ -161,6 +161,7 @@ function setup_program()
 		then
 			# ...if it doesnt exist, we create it and are done.
 			out -n "+ Config file $FILE is new, creating link."
+			mkdir -p "$(dirname $SOURCE)"
 			RES=$(ln -s "$TARGET" "$SOURCE" 2>&1)
 			RET=$?
 			[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
