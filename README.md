@@ -20,6 +20,9 @@ Initial setup:
    - On other machines run set-up-configs.sh without arguments to:
      update and link config files from repository
 
+ - Add all files in a subdirectory, for example "awesome" windowmanager themes:
+     $ find .awesome/themes -type f -print0 | xargs -0 set-up-configs.sh add awesome
+
  - Remove vim from repository and restore regular config files:
    $ set-up-configs.sh -u vim
    - The config files will remain in $REPOSITORY
@@ -27,3 +30,4 @@ Initial setup:
 
  - Replace all config files with symlinks to git repository on new shell:
    $ set-up-configs.sh -f
+
