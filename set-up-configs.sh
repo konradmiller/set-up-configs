@@ -267,7 +267,7 @@ function add()
 		fail "+ program-name $NAME exists, but is not a directory"
 	else
 		echo "+ storing config files for new program $NAME"
-		mkdir "$DOT/$NAME"
+		mkdir -p "$DOT/$NAME"
 	fi
 
 	while [[ ! -z "$1" ]]
