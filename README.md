@@ -31,7 +31,7 @@ Initial setup:
 
  - Add all files in a subdirectory, for example "awesome" windowmanager themes:
 ```
-     $ find .awesome/themes -type f -print0 | xargs -0 set-up-configs.sh add awesome
+     $ find .awesome/themes -type f -print0 | xargs -0 set-up-configs.sh -a awesome
 ```
 
  - Remove vim from repository and restore regular config files:
