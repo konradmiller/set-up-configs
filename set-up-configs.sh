@@ -57,7 +57,6 @@ DIFF="vimdiff"
 LANG=C
 
 
-
 #############################################################
 # commandline parsing
 
@@ -111,6 +110,26 @@ function fail()  { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${RED}$@${WH
 # only echo if -v is given
 function debug() { [[ $VERBOSE -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
 
+# export ATN and exit
+# 1 == repository update/pull failed
+function die()
+{
+	case "$2" in
+		0)
+			debug "all good, no errors"
+			export SETUPCONFIGS_ATN=""
+			exit 0
+			;;
+		1)
+			fail "\tfailed"
+			out "Error:\n$1"
+			export SETUPCONFIGS_ATN="dotfile clone/pull failed"
+			exit 1
+			;;
+	esac
+
+}
+
 
 function update_repository()
 {
@@ -126,7 +145,7 @@ function update_repository()
 	fi
 	# first get return value of git command, then echo
 	RET=$?
-	[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
+	[[ "$RET" -eq 0 ]] && (ok "\tdone") || (die "$RES" 1)
 }
 
 #############################################################
