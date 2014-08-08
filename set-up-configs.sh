@@ -79,12 +79,12 @@ do
 
 		\?)
 			fail "Unknown option: -$OPTARG"
-			exit 1
+			HELP=1
 			;;
 
 		:)
 			fail "Option -$OPTARG requires an argument"
-			exit 1
+			HELP=1
 			;;
 	esac
 done
