@@ -67,6 +67,24 @@ fi
 LANG=C
 
 
+
+#############################################################
+# echo functions
+GREEN='\033[01;32m'
+RED='\033[01;31m'
+WHITE='\033[00m'
+YELLOW='\033[0;33m'
+
+# echo white, green or red (unless -q was given, or if -v is given with -q)
+function out()   { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "$@"; }
+function ok()    { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${GREEN}$@${WHITE}"; }
+function fail()  { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${RED}$@${WHITE}" >&2; }
+
+# only echo if -v is given
+function debug() { [[ $VERBOSE -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
+
+
+
 #############################################################
 # commandline parsing
 
@@ -102,26 +120,9 @@ do
 	esac
 done
 
+
 # get rid of commandline options
 shift $((OPTIND-1))
-
-
-
-#############################################################
-# echo functions
-
-GREEN='\033[01;32m'
-RED='\033[01;31m'
-WHITE='\033[00m'
-YELLOW='\033[0;33m'
-
-# echo white, green or red (unless -q was given, or if -v is given with -q)
-function out()   { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "$@"; }
-function ok()    { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${GREEN}$@${WHITE}"; }
-function fail()  { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${RED}$@${WHITE}" >&2; }
-
-# only echo if -v is given
-function debug() { [[ $VERBOSE -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
 
 # export ATN and exit
 # 1 == repository update/pull failed
