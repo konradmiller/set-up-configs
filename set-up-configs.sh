@@ -32,6 +32,8 @@
 # Remove symlinks and copy files from repository to their original positions
 #	set-up-configs.sh -u "name"
 
+# Online check: -o
+# Only update repository if the git server is returning pings
 
 # I didn't want to deal with the paths too much, so only run this from $HOME kids!
 # (And don't try to add anyting below your $HOME into the git)
@@ -71,14 +73,17 @@ LANG=C
 ADD=0
 FORCE=0
 HELP=0
+ONLINE_ONLY=0
 QUIET=0
 UNLINK=0
 VERBOSE=0
-while getopts ":fhqva:u:" OPTION
+
+while getopts ":fhoqva:u:" OPTION
 do
 	case $OPTION in
 		f) FORCE=1               ;;
 		h) HELP=1                ;;
+		o) ONLINE_ONLY=1         ;;
 		q) QUIET=1               ;;
 		v) VERBOSE=1             ;;
 
@@ -157,17 +162,41 @@ function environment_check()
 		die "You need to export at least \$DOT and \$REPOSITORY" 2
 	fi
 
+	# $GIT_HOST is only required if -o is requested
+	if [[ $ONLINE_ONLY -eq 1 ]] && [[ -z "$GIT_HOST" ]]
+	then
+		die "You need to export \$GIT_HOST if you pass -o" 2
+	fi
+
 	# You need to decide if you want to add or unlink ;-)
 	if [[ $UNLINK -eq 1 ]] && [[ $ADD -eq 1 ]]
 	then
 		die "error: either pick -u or -a!" 3
 	fi
 }
+
+
+function online_check()
+{
+	ping -q -c 3 -o -i .1 -W .5 $GIT_HOST &>/dev/null
+	[[ $? -eq 0 ]] && ONLINE=1 || ONLINE=0
 }
 
 
 function update_repository()
 {
+	if [[ "$ONLINE_ONLY" -eq 1 ]]
+	then
+		online_check
+		if [[ $ONLINE -ne 1 ]]
+		then
+			fail "Git host is not reachable - skipping clone/pull of dotfiles"
+			return
+		else
+			debug "Git host is reachable"
+		fi
+	fi
+
 	if [[ -d "$DOT" ]]
 	then
 		# update repository
@@ -435,6 +464,7 @@ then
 	echo "  -a <name> <file1> [<file2>...]   add config files to a program"
 	echo "  -f                               force overwriting conflicting files"
 	echo "  -h                               print this help list"
+	echo "  -o                               only try to clone/update repository if online"
 	echo "  -q                               quiet: only output errors, do not overwrite files"
 	echo "  -u <name>                        unlink all config files of a program"
 	echo "  -v                               increase verbosity of output"
