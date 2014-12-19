@@ -140,6 +140,11 @@ function die()
 			export SETUPCONFIGS_ATN="configuration incomplete"
 			exit 2
 			;;
+		3)
+			fail "Error:\n$1"
+			export SETUPCONFIGS_ATN="contradicting flags given"
+			exit 3
+			;;
 	esac
 
 }
@@ -151,6 +156,13 @@ function environment_check()
 	then
 		die "You need to export at least \$DOT and \$REPOSITORY" 2
 	fi
+
+	# You need to decide if you want to add or unlink ;-)
+	if [[ $UNLINK -eq 1 ]] && [[ $ADD -eq 1 ]]
+	then
+		die "error: either pick -u or -a!" 3
+	fi
+}
 }
 
 
@@ -455,12 +467,11 @@ then
 fi
 
 
-# exit if configuration is incomplete
+# exit if...
+# ... configuration is incomplete or
+# ... if contradicting flags were given
 environment_check
 
-
-# You need to decide if you want to add or unlink ;-)
-[[ $UNLINK -eq 1 ]] && [[ $ADD -eq 1 ]] && fail "error: either pick -u or -a!" && exit 1
 
 if [[ $ADD -eq 1 ]]
 then
