@@ -44,9 +44,18 @@
 # The location of the git repository containing the config files
 # Modify those variables to match your setup
 
-DOT=".dotfiles"
-REPOSITORY="kmiller@i30s5.ibds.uka.de:git-repos/dotfiles.git"
-DIFF="vimdiff"
+# You can either set the config values...
+if [[ ! -r "$HOME/.set-up-configs" ]]
+then
+	# ... right here in this script ...
+	DOT=".dotfiles"   # Local directory where to clone the config files
+	GIT_HOST=""       # Hostname - only used for online-check (-o)
+	REPOSITORY=""     # Full name, hostname and path to git repository
+	DIFF="vimdiff"    # Program to merge conflicts
+else
+	# ... or in a separate config file located at ~/.set-up-configs
+	source "$HOME/.set-up-configs"
+fi
 
 
 
