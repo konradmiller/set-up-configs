@@ -112,6 +112,7 @@ function debug() { [[ $VERBOSE -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
 
 # export ATN and exit
 # 1 == repository update/pull failed
+# 2 == configuration incomplete
 function die()
 {
 	case "$2" in
@@ -126,8 +127,22 @@ function die()
 			export SETUPCONFIGS_ATN="dotfile clone/pull failed"
 			exit 1
 			;;
+		2)
+			fail "Error:\n$1"
+			export SETUPCONFIGS_ATN="configuration incomplete"
+			exit 2
+			;;
 	esac
 
+}
+
+
+function environment_check()
+{
+	if [[ -z "$DOT" ]] || [[ -z "$REPOSITORY" ]]
+	then
+		die "You need to export at least \$DOT and \$REPOSITORY" 2
+	fi
 }
 
 
@@ -430,6 +445,11 @@ then
 
 	exit
 fi
+
+
+# exit if configuration is incomplete
+environment_check
+
 
 # You need to decide if you want to add or unlink ;-)
 [[ $UNLINK -eq 1 ]] && [[ $ADD -eq 1 ]] && fail "error: either pick -u or -a!" && exit 1
