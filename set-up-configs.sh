@@ -6,7 +6,6 @@
 # Set $DOT to a local directory relative to $HOME
 # 	this is where the git-repository will be checked out
 # Set $REPOSITORY to your dotfiles git repository
-#
 
 # Quiet flag: -q
 # When this script is run with the -q argument, it will
