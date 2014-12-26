@@ -180,7 +180,7 @@ function environment_check()
 	# You need to decide if you want to add or unlink ;-)
 	if [[ $UNLINK -eq 1 ]] && [[ $ADD -eq 1 ]]
 	then
-		die "error: either pick -u or -a!" 3
+		die "error: you cannot add files (-a) and unlink files (-u) at the same time" 3
 	fi
 }
 
