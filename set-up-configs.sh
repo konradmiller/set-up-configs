@@ -190,7 +190,9 @@ function environment_check()
 # --> Skip git pull/git clone if ping doesn't return
 function online_check()
 {
-	ping -q -c 3 -o -i .1 -W .5 $GIT_HOST &>/dev/null
+	[[ -z "$GIT_HOST" ]] && die "need GIT_HOST for online check" 2
+
+	ping -q -c 3 -o -i .1 -W .5 "$GIT_HOST" &>/dev/null
 	[[ $? -eq 0 ]] && ONLINE=1 || ONLINE=0
 }
 
