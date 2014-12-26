@@ -219,7 +219,7 @@ function update_repository()
 	else
 		# clone repository
 		out -n "+ Cloning dotfiles repository... "
-		RES=$(cd "$HOME" && git clone $REPOSITORY .dotfiles 2>&1)
+		RES=$(cd "$HOME" && git clone "$REPOSITORY" "$DOT" 2>&1)
 	fi
 	# first get return value of git command, then echo
 	RET=$?
