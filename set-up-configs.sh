@@ -320,8 +320,7 @@ function setup_program()
 						PROMPT_DONE=1
 						;;
 					*)
-						out "Ignoring $SOURCE for now..."
-						PROMPT_DONE=1
+						out "Please pick an option for $SOURCE..."
 						;;
 				esac
 			done
