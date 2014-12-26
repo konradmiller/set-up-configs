@@ -122,11 +122,16 @@ done
 
 
 # get rid of commandline options
+# (the rest of the arguments are file arguments, if present)
 shift $((OPTIND-1))
 
 # export ATN and exit
+# ATN is meant to transport information despite "quiet background operation"
+# --> ignore output but warn if SETUPCONFIGS_ATN is set and config file
+#     repository requires attention
 # 1 == repository update/pull failed
 # 2 == configuration incomplete
+# 3 == contradicting flags
 function die()
 {
 	case "$2" in
@@ -163,7 +168,10 @@ function environment_check()
 		die "You need to export at least \$DOT and \$REPOSITORY" 2
 	fi
 
-	# $GIT_HOST is only required if -o is requested
+	# $GIT_HOST is only required if -o is requested and used as the ping target
+	# The idea ist, that you can also use e.g., "8.8.8.8" if your
+	# $GIT_HOST does not send ICMP replies
+	# $REPOSITORY generally also contains the actual $GIT_HOST
 	if [[ $ONLINE_ONLY -eq 1 ]] && [[ -z "$GIT_HOST" ]]
 	then
 		die "You need to export \$GIT_HOST if you pass -o" 2
@@ -177,6 +185,9 @@ function environment_check()
 }
 
 
+# Waiting for git to fail when we're not online is annoying
+# ping returns quicker when a short timeout (e.g., .5s) is given
+# --> Skip git pull/git clone if ping doesn't return
 function online_check()
 {
 	ping -q -c 3 -o -i .1 -W .5 $GIT_HOST &>/dev/null
@@ -265,9 +276,10 @@ function setup_program()
 			continue
 		fi
 
-		# we already filtered $QUIET mode, so prompt for the last two
-		# cases:
-
+		# we already filtered
+		#    - correct symlinks and
+		#    - $QUIET mode
+		# --> prompt for the last two cases
 		if [[ -L "$SOURCE" ]]
 		then
 			read -p "Config file $SOURCE is a symlink pointing to $(readlink $SOURCE). Overwrite? (y|n) " -n 1 -r
