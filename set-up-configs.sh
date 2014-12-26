@@ -157,7 +157,6 @@ function die()
 			exit 3
 			;;
 	esac
-
 }
 
 
