@@ -366,7 +366,7 @@ function add()
 	if [[ -d "$DOT/$NAME" ]]
 	then
 		echo "+ adding config files to program $NAME"
-	elif [[ -a "$DOT/$NAME" ]]
+	elif [[ -e "$DOT/$NAME" ]]
 	then
 		fail "+ program-name $NAME exists, but is not a directory"
 	else
@@ -405,7 +405,7 @@ function add()
 		REPO_FILE="$REPO_DIR/$FILENAME"
 
 		# does this file-name already live in $NAME?
-		if [[ -a "$REPO_FILE" ]]
+		if [[ -e "$REPO_FILE" ]]
 		then
 			fail "$FILE already exists in the git repository. I will ignore it!"
 			fail "If you want to overwrite the file in repo do:"
