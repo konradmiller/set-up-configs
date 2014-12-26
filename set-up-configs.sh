@@ -76,12 +76,12 @@ WHITE='\033[00m'
 YELLOW='\033[0;33m'
 
 # echo white, green or red (unless -q was given, or if -v is given with -q)
-function out()   { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "$@"; }
-function ok()    { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${GREEN}$@${WHITE}"; }
-function fail()  { [[ $VERBOSE -eq 1 || $QUIET -ne 1 ]] && echo -e "${RED}$@${WHITE}" >&2; }
+function out()   { [[ "$VERBOSE" -eq 1 || "$QUIET" -ne 1 ]] && echo -e "$@"; }
+function ok()    { [[ "$VERBOSE" -eq 1 || "$QUIET" -ne 1 ]] && echo -e "${GREEN}$@${WHITE}"; }
+function fail()  { [[ "$VERBOSE" -eq 1 || "$QUIET" -ne 1 ]] && echo -e "${RED}$@${WHITE}" >&2; }
 
 # only echo if -v is given
-function debug() { [[ $VERBOSE -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
+function debug() { [[ "$VERBOSE" -eq 1 ]] && echo -e "+++ ${YELLOW}$@${WHITE}"; }
 
 
 
@@ -98,15 +98,15 @@ VERBOSE=0
 
 while getopts ":fhoqva:u:" OPTION
 do
-	case $OPTION in
-		f) FORCE=1               ;;
-		h) HELP=1                ;;
-		o) ONLINE_ONLY=1         ;;
-		q) QUIET=1               ;;
-		v) VERBOSE=1             ;;
+	case "$OPTION" in
+		f) FORCE=1                 ;;
+		h) HELP=1                  ;;
+		o) ONLINE_ONLY=1           ;;
+		q) QUIET=1                 ;;
+		v) VERBOSE=1               ;;
 
-		a) ADD=1;   NAME=$OPTARG ;;
-		u) UNLINK=1 NAME=$OPTARG ;;
+		a) ADD=1;   NAME="$OPTARG" ;;
+		u) UNLINK=1 NAME="$OPTARG" ;;
 
 		\?)
 			fail "Unknown option: -$OPTARG"
@@ -172,13 +172,13 @@ function environment_check()
 	# The idea ist, that you can also use e.g., "8.8.8.8" if your
 	# $GIT_HOST does not send ICMP replies
 	# $REPOSITORY generally also contains the actual $GIT_HOST
-	if [[ $ONLINE_ONLY -eq 1 ]] && [[ -z "$GIT_HOST" ]]
+	if [[ "$ONLINE_ONLY" -eq 1 ]] && [[ -z "$GIT_HOST" ]]
 	then
 		die "You need to export \$GIT_HOST if you pass -o" 2
 	fi
 
 	# You need to decide if you want to add or unlink ;-)
-	if [[ $UNLINK -eq 1 ]] && [[ $ADD -eq 1 ]]
+	if [[ "$UNLINK" -eq 1 ]] && [[ "$ADD" -eq 1 ]]
 	then
 		die "error: you cannot add files (-a) and unlink files (-u) at the same time" 3
 	fi
@@ -200,7 +200,7 @@ function update_repository()
 	if [[ "$ONLINE_ONLY" -eq 1 ]]
 	then
 		online_check
-		if [[ $ONLINE -ne 1 ]]
+		if [[ "$ONLINE" -ne 1 ]]
 		then
 			fail "Git host is not reachable - skipping clone/pull of dotfiles"
 			return
@@ -232,31 +232,31 @@ function update_repository()
 # ask what to do on conflicts without arguments
 function setup_program()
 {
-	PROGRAM=$1
+	PROGRAM="$1"
 	debug "Processing program $PROGRAM"
 
 	# traverse all files
 	while IFS= read -r -u3 -d $'\0' FILE; do
 
 		# get rid of ./ prefix
-		FILE=${FILE:2}
+		FILE="${FILE:2}"
 
-		debug "processing config file: $FILE "
-		SOURCE=$HOME/$FILE
-		TARGET=$HOME/$DOT/$PROGRAM/$FILE
+		debug "processing config file: $FILE"
+		SOURCE="$HOME/$FILE"
+		TARGET="$HOME/$DOT/$PROGRAM/$FILE"
 
 		# Link is correct, we are done with this file :)
-		[[ -L $SOURCE ]] && [[ $TARGET == "$(readlink $SOURCE)" ]] && continue
+		[[ -L "$SOURCE" ]] && [[ "$TARGET" == $(readlink "$SOURCE") ]] && continue
 
 		# File exists and we are in quiet mode -> Ignore
-		[[ -a $SOURCE ]] && [[ $QUIET -eq 1 ]] && continue
+		[[ -e "$SOURCE" ]] && [[ "$QUIET" -eq 1 ]] && continue
 
 		# File does not exist, create it -> done :)
-		if [[ ! -a "$SOURCE" ]]
+		if [[ ! -e "$SOURCE" ]]
 		then
 			# ...if it doesnt exist, we create it and are done.
 			out -n "+ Config file $FILE is new, creating link."
-			mkdir -p "$(dirname $SOURCE)"
+			mkdir -p $(dirname "$SOURCE")
 			RES=$(ln -s "$TARGET" "$SOURCE" 2>&1)
 			RET=$?
 			[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
@@ -295,7 +295,7 @@ function setup_program()
 		if [[ -f "$SOURCE" ]]
 		then
 			PROMPT_DONE=0
-			while [[ $PROMPT_DONE -eq 0 ]]
+			while [[ "$PROMPT_DONE" -eq 0 ]]
 			do
 				echo -n "Config file $SOURCE already exists. Options: "
 				read -p "(d)iff, overwrite (l)ocal, overwrite (r)epo, (i)gnore " -n 1 -r
@@ -328,7 +328,7 @@ function setup_program()
 
 		fail "$SOURCE fell all the way through, something is probably wrong!"
 
-	done 3< <(cd $DOT/$PROGRAM && find . -type f -print0)
+	done 3< <(cd "$DOT/$PROGRAM" && find . -type f -print0)
 }
 
 
@@ -342,9 +342,9 @@ function setup()
 	while IFS= read -r -u3 -d $'\0' PROGRAM; do
 
 		# get rid of the $DOT prefix
-		PROGRAM=${PROGRAM:$[1+${#DOT}]}
+		PROGRAM="${PROGRAM:$[1+${#DOT}]}"
 
-		setup_program $PROGRAM
+		setup_program "$PROGRAM"
 
 	done 3< <(find "$DOT" -mindepth 1 -maxdepth 1 \
 			-path "$DOT/.git" -prune -o \
@@ -360,7 +360,7 @@ function setup()
 function add()
 {
 	# check out repository if it has never been pulled at all
-	[[ ! -d $DOT/.git ]] && update_repository
+	[[ ! -d "$DOT/.git" ]] && update_repository
 
 	if [[ -d "$DOT/$NAME" ]]
 	then
@@ -400,7 +400,7 @@ function add()
 			REPO_DIR="$DOT/$NAME/$REL_DIR"
 			mkdir -p "$REPO_DIR"
 		fi
-		FILENAME=$(basename $FILE)
+		FILENAME=$(basename "$FILE")
 		REPO_FILE="$REPO_DIR/$FILENAME"
 
 		# does this file-name already live in $NAME?
@@ -437,23 +437,23 @@ function add()
 
 function unlink()
 {
-	[[ ! -d $DOT/.git ]] && fail "Git-repository does not exist" && exit 1
+	[[ ! -d "$DOT/.git" ]] && fail "Git-repository does not exist" && exit 1
 
-	PROGRAM=$NAME
+	PROGRAM="$NAME"
 	debug "Unlinking program $PROGRAM"
 
 	# traverse all files
 	while IFS= read -r -u3 -d $'\0' FILE; do
 
 		# get rid of ./ prefix
-		FILE=${FILE:2}
+		FILE="${FILE:2}"
 
-		debug "unlinking config file: $FILE "
-		SOURCE=$HOME/$FILE
-		TARGET=$HOME/$DOT/$PROGRAM/$FILE
+		debug "unlinking config file: $FILE"
+		SOURCE="$HOME/$FILE"
+		TARGET="$HOME/$DOT/$PROGRAM/$FILE"
 
-		[[ ! -L $SOURCE ]] && fail "$SOURCE is not a symlink" && continue
-		[[ $TARGET != "$(readlink $SOURCE)" ]] && fail "$SOURCE does not link to $TARGET" && continue
+		[[ ! -L "$SOURCE" ]] && fail "$SOURCE is not a symlink" && continue
+		[[ "$TARGET" != $(readlink "$SOURCE") ]] && fail "$SOURCE does not link to $TARGET" && continue
 
 		# everything is ok, config file is a proper symlink to repo
 		out -n "Replacing symlink $SOURCE with original in repo"
@@ -461,7 +461,7 @@ function unlink()
 		RET=$?
 		[[ "$RET" -eq 0 ]] && (ok "\tdone") || (fail "\tfailed"; out "$RES"; exit 2)
 
-	done 3< <(cd $DOT/$PROGRAM && find . -type f -print0)
+	done 3< <(cd "$DOT/$PROGRAM" && find . -type f -print0)
 }
 
 
@@ -470,7 +470,7 @@ function unlink()
 # decide where to go with the given options
 
 # Help superseeds everything
-if [[ $HELP -eq 1 ]]
+if [[ "$HELP" -eq 1 ]]
 then
 	echo "Usage: $0 [OPTION...] [NAME] [FILES]"
 	echo
@@ -516,10 +516,10 @@ fi
 environment_check
 
 
-if [[ $ADD -eq 1 ]]
+if [[ "$ADD" -eq 1 ]]
 then
 	add $@
-elif [[ $UNLINK -eq 1 ]]
+elif [[ "$UNLINK" -eq 1 ]]
 then
 	unlink $@
 else
