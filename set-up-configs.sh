@@ -142,17 +142,17 @@ function die()
 			;;
 		1)
 			fail "\tfailed"
-			out "Error:\n$1"
+			out "Error: $1"
 			export SETUPCONFIGS_ATN="dotfile clone/pull failed"
 			exit 1
 			;;
 		2)
-			fail "Error:\n$1"
+			fail "Error: $1"
 			export SETUPCONFIGS_ATN="configuration incomplete"
 			exit 2
 			;;
 		3)
-			fail "Error:\n$1"
+			fail "Error: $1"
 			export SETUPCONFIGS_ATN="contradicting flags given"
 			exit 3
 			;;
