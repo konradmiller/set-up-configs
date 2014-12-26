@@ -524,7 +524,7 @@ elif [[ "$UNLINK" -eq 1 ]]
 then
 	unlink $@
 else
-	[ ! -z "$1" ] && fail "You unexpectedly provided additional arguments, exiting" && exit
+	[[ ! -z "$1" ]] && fail "You unexpectedly provided additional arguments, exiting" && exit
 	setup
 fi
 
