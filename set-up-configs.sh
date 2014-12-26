@@ -504,7 +504,7 @@ then
 	echo "   - The config files will remain in \$REPOSITORY"
 	echo "   - The original config file locations (symlinks) are replaced with copies from \$REPOSITORY."
 	echo
-	echo "Report bugs to: <miller@kit.edu>"
+	echo "Please report bugs in github: https://github.com/konradmiller/set-up-configs"
 	echo
 
 	exit
